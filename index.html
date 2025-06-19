@@ -68,7 +68,7 @@
   <img
     id="mango"
     class="mango-img"
-    <img src="mango.png" class="mango-img" alt="Missing Mango" />
+    <img src="Mango.png" class="mango-img" alt="Missing Mango" />
 
   <div id="message"></div>
 
@@ -84,10 +84,11 @@
       1: "Your first mango, well done!.",
       10: "10 down, baby steps.",
       100: "100 mangoes. Enough to feed my apartment block.",
-      1000: "This won't feed a night club.",
+      1000: "Will feed my school tenfold.",
       10000: "10k??? Yeah nice Autoclicker",
-      100000: "100k. Will take time with autoclicker",
+      100000: "100k. Awesome autoclicker",
       1000000: "Million mangoes. Your first rebirth (maybe not) Rebirts happen every tenth power. 1 mill being the first one."
+      10000000: "TEN Million mangoes. I quit. continue clicking. or not, it's your choice. Thanks for playing! ❤️"
     };
 
     function isPowerOfTen(n) {
@@ -114,7 +115,7 @@
       }
 
       if (isPowerOfTen(count)) {
-        let msg = powerMessages[count] || `You've harvested ${count.toLocaleString()} mangoes. You're built different.`;
+        let msg = powerMessages[count] || `You've harvested ${count.toLocaleString()} mangoes. THIS IS AN AUTOMATED MESSAGE. `;
         messageBox.textContent = msg;
       }
     });
