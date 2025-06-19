@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mango Clicker</title>
+  <style>
+    body {
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(135deg, #ffd1dc, #ffa69e);
+      color: #4b2e2e;
+      user-select: none;
+    }
+
+    h1 {
+      text-shadow: 2px 2px 5px #ff6f91;
+    }
+
+    h3 {
+      color: #ff3366;
+      text-shadow: 1px 1px 3px #7a1f2d;
+    }
+
+    #message {
+      font-size: 18px;
+      margin-top: 20px;
+      color: #6b2e2e;
+      min-height: 40px;
+      text-shadow: 1px 1px 2px #ff6699;
+    }
+
+    .mango-img {
+      width: 200px;
+      height: auto;
+      transition: transform 0.1s ease;
+      cursor: pointer;
+      filter: drop-shadow(0 0 12px #ff6699);
+    }
+
+    .mango-img:active {
+      transform: scale(0.85) rotate(-15deg);
+    }
+
+    button {
+      padding: 14px 30px;
+      font-size: 20px;
+      background-color: #ff4d6d;
+      color: white;
+      border: 2px solid #ff1a40;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 25px;
+      box-shadow: 0 0 12px #ff3366;
+    }
+
+    button:hover {
+      background-color: #cc3853;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mango Clicker</h1>
+  <h3>Mangoes Collected: <span id="count">0</span></h3>
+  <h3>Rebirths: <span id="rebirths">0</span></h3>
+
+  <img
+    id="mango"
+    class="mango-img"
+    <img src="mango.png" class="mango-img" alt="Missing Mango" />
+
+  <div id="message"></div>
+
+  <script>
+    let count = 0;
+    let rebirths = 0;
+    const countDisplay = document.getElementById("count");
+    const rebirthDisplay = document.getElementById("rebirths");
+    const messageBox = document.getElementById("message");
+    const mango = document.getElementById("mango");
+
+    const powerMessages = {
+      1: "Your first mango, well done!.",
+      10: "10 down, baby steps.",
+      100: "100 mangoes. Enough to feed my apartment block.",
+      1000: "This won't feed a night club.",
+      10000: "10k??? Yeah nice Autoclicker",
+      100000: "100k. Will take time with autoclicker",
+      1000000: "Million mangoes. Your first rebirth (maybe not) Rebirts happen every tenth power. 1 mill being the first one."
+    };
+
+    function isPowerOfTen(n) {
+      return Number.isInteger(Math.log10(n));
+    }
+
+    function rebirthThreshold(level) {
+      // Rebirth thresholds: 1,000,000 (10^6), 10,000,000 (10^7), etc.
+      return 10 ** (level + 6);
+    }
+
+    mango.addEventListener("click", () => {
+      let mangoesPerClick = Math.pow(rebirths + 1, 4);
+      count += mangoesPerClick;
+      countDisplay.textContent = count.toLocaleString();
+
+      if (count >= rebirthThreshold(rebirths)) {
+        rebirths++;
+        count = 0;
+        rebirthDisplay.textContent = rebirths;
+        messageBox.textContent = `REBIRTH! Mango power is now ${(rebirths + 1) ** 4} mangoes per click! 🔥🔥🔥`;
+        countDisplay.textContent = count.toLocaleString();
+        return;
+      }
+
+      if (isPowerOfTen(count)) {
+        let msg = powerMessages[count] || `You've harvested ${count.toLocaleString()} mangoes. You're built different.`;
+        messageBox.textContent = msg;
+      }
+    });
+  </script>
+</body>
+</html>
