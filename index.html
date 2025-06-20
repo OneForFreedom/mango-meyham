@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Mango Clicker</title>
+  <title>Mango Meyham</title>
   <style>
     body {
       font-family: "Comic Sans MS", cursive, sans-serif;
@@ -74,7 +74,7 @@
   </style>
 </head>
 <body>
-  <h1>Mango Clicker</h1>
+  <h1>Mango Meyham</h1>
   <h3>Mangoes Collected: <span id="count">0</span></h3>
   <h3>Rebirths: <span id="rebirths">0</span></h3>
   <h3>Mangoes Per Second: <span id="mps">0</span></h3>
@@ -134,7 +134,7 @@
     const rebirthButton = document.getElementById("rebirthBtn");
     const mango = document.getElementById("mango");
 
-    // Balanced items with costs and rates
+  
     const items = [
       { cost: 100, rate: 1 },
       { cost: 500, rate: 10 },
@@ -146,7 +146,7 @@
       { cost: 7000000, rate: 100000 }
     ];
 
-    // Prices separate from base costs to handle scaling on purchases
+   
     const itemPrices = items.map(item => item.cost);
 
     const powerMessages = {
