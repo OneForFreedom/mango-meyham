@@ -58,39 +58,106 @@
     button:hover {
       background-color: #cc3853;
     }
+
+    .shop {
+      margin-top: 40px;
+    }
+
+    .shop-item {
+      margin: 10px 0;
+      padding: 10px;
+      border: 2px solid #ff4d6d;
+      background-color: #fff0f5;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ffa3b1;
+    }
   </style>
 </head>
 <body>
   <h1>Mango Clicker</h1>
   <h3>Mangoes Collected: <span id="count">0</span></h3>
   <h3>Rebirths: <span id="rebirths">0</span></h3>
+  <h3>Mangoes Per Second: <span id="mps">0</span></h3>
+  <h3>Mangoes Per Click: <span id="mpc">1</span></h3>
 
-  <img
-    id="mango"
-    src="Mango.png" 
-    class="mango-img" 
-    alt="Missing Mango" 
-    />
+  <img id="mango" src="Mango.png" class="mango-img" alt="Missing Mango" />
 
   <div id="message"></div>
+  <button id="rebirthBtn" onclick="performRebirth()" style="display:none;">🔥 Rebirth 🔥</button>
+
+  <div class="shop">
+    <h2>Shop 🍍</h2>
+    <div class="shop-item">
+      <p>👨‍🌾 Mango Eater (+1 mango/s)</p>
+      <button onclick="buyItem(0)">Buy (<span id="price0">100</span>)</button>
+    </div>
+    <div class="shop-item">
+      <p>🚜 Mango Family (+10 mangoes/s)</p>
+      <button onclick="buyItem(1)">Buy (<span id="price1">500</span>)</button>
+    </div>
+    <div class="shop-item">
+      <p>🍳 Mango Chef (+50 mangoes/s)</p>
+      <button onclick="buyItem(2)">Buy (<span id="price2">2,500</span>)</button>
+    </div>
+    <div class="shop-item">
+      <p>🧙 Mango Wizard (+200 mangoes/s)</p>
+      <button onclick="buyItem(3)">Buy (<span id="price3">12,000</span>)</button>
+    </div>
+    <div class="shop-item">
+      <p>👑 Mango King (+1,000 mangoes/s)</p>
+      <button onclick="buyItem(4)">Buy (<span id="price4">60,000</span>)</button>
+    </div>
+    <div class="shop-item">
+      <p>🛡️ Mango Emperor (+5,000 mangoes/s)</p>
+      <button onclick="buyItem(5)">Buy (<span id="price5">300,000</span>)</button>
+    </div>
+    <div class="shop-item">
+      <p>👑 Mango God (+25,000 mangoes/s)</p>
+      <button onclick="buyItem(6)">Buy (<span id="price6">1,500,000</span>)</button>
+    </div>
+    <div class="shop-item">
+      <p>🥭 The Mango (+100,000 mangoes/s)</p>
+      <button onclick="buyItem(7)">Buy (<span id="price7">7,000,000</span>)</button>
+    </div>
+  </div>
 
   <script>
     let count = 0;
     let rebirths = 0;
+    let mangoesPerSecond = 0;
+
     const countDisplay = document.getElementById("count");
     const rebirthDisplay = document.getElementById("rebirths");
+    const mpsDisplay = document.getElementById("mps");
+    const mpcDisplay = document.getElementById("mpc");
     const messageBox = document.getElementById("message");
+    const rebirthButton = document.getElementById("rebirthBtn");
     const mango = document.getElementById("mango");
 
+    // Balanced items with costs and rates
+    const items = [
+      { cost: 100, rate: 1 },
+      { cost: 500, rate: 10 },
+      { cost: 2500, rate: 50 },
+      { cost: 12000, rate: 200 },
+      { cost: 60000, rate: 1000 },
+      { cost: 300000, rate: 5000 },
+      { cost: 1500000, rate: 25000 },
+      { cost: 7000000, rate: 100000 }
+    ];
+
+    // Prices separate from base costs to handle scaling on purchases
+    const itemPrices = items.map(item => item.cost);
+
     const powerMessages = {
-      1: "Your first mango, well done!.",
+      1: "Your first mango, well done!",
       10: "10 down, baby steps.",
       100: "100 mangoes. Enough to feed my apartment block.",
-      1000: "Will feed my school tenfold.",
-      10000: "10k??? Yeah nice Autoclicker",
-      100000: "100k. Awesome autoclicker",
-      1000000: "Million mangoes. Your first rebirth (maybe not) Rebirts happen every tenth power. 1 mill being the first one.",
-      10000000: "TEN Million mangoes. I quit. continue clicking. or not, it's your choice. Thanks for playing! ❤️",
+      1000: "Probably will feed my school tenfold.",
+      10000: "10k??? I hope you're playing legit",
+      100000: "100k. Good job! I respect you.",
+      1000000: "Million mangoes. I see the grind.",
+      10000000: "TEN Million mangoes. I quit. Continue clicking, or not, it's your choice. Thanks for playing! ❤️"
     };
 
     function isPowerOfTen(n) {
@@ -98,29 +165,74 @@
     }
 
     function rebirthThreshold(level) {
-      // Rebirth thresholds: 1,000,000 (10^6), 10,000,000 (10^7), etc.
-      return 10 ** (level + 6);
+      return 1000 * Math.pow(10, level);
+    }
+
+    function updatePrices() {
+      items.forEach((_, i) => {
+        document.getElementById("price" + i).textContent = itemPrices[i].toLocaleString();
+      });
+    }
+
+    function updateGame() {
+      countDisplay.textContent = count.toLocaleString();
+      rebirthDisplay.textContent = rebirths;
+      mpsDisplay.textContent = mangoesPerSecond.toLocaleString();
+      mpcDisplay.textContent = Math.pow(rebirths + 1, 2);
+      checkRebirthUnlock();
+    }
+
+    function checkRebirthUnlock() {
+      if (count >= rebirthThreshold(rebirths)) {
+        rebirthButton.style.display = "inline-block";
+      } else {
+        rebirthButton.style.display = "none";
+      }
+    }
+
+    function performRebirth() {
+      if (count >= rebirthThreshold(rebirths)) {
+        count = 0;
+        rebirths++;
+        mangoesPerSecond = 0;
+        itemPrices.forEach((_, i) => itemPrices[i] = items[i].cost);
+        updatePrices();
+        updateGame();
+        messageBox.textContent = `🔥 Rebirth successful! Mangoes per click is now ${(rebirths + 1) ** 2}.`;
+        rebirthButton.style.display = "none";
+      }
     }
 
     mango.addEventListener("click", () => {
-      let mangoesPerClick = Math.pow(rebirths + 1, 4);
+      let mangoesPerClick = Math.pow(rebirths + 1, 2);
       count += mangoesPerClick;
-      countDisplay.textContent = count.toLocaleString();
-
-      if (count >= rebirthThreshold(rebirths)) {
-        rebirths++;
-        count = 0;
-        rebirthDisplay.textContent = rebirths;
-        messageBox.textContent = `REBIRTH! Mango power is now ${(rebirths + 1) ** 4} mangoes per click! 🔥🔥🔥`;
-        countDisplay.textContent = count.toLocaleString();
-        return;
-      }
+      updateGame();
 
       if (isPowerOfTen(count)) {
-        let msg = powerMessages[count] || `You've harvested ${count.toLocaleString()} mangoes. THIS IS AN AUTOMATED MESSAGE. `;
+        let msg = powerMessages[count] || `You've harvested ${count.toLocaleString()} mangoes.`;
         messageBox.textContent = msg;
       }
     });
+
+    function buyItem(index) {
+      if (count >= itemPrices[index]) {
+        count -= itemPrices[index];
+        mangoesPerSecond += items[index].rate;
+        itemPrices[index] = Math.floor(itemPrices[index] * 1.25);
+        updateGame();
+        updatePrices();
+      } else {
+        messageBox.textContent = "Not enough mangoes, keep grinding!";
+      }
+    }
+
+    function passiveGain() {
+      count += mangoesPerSecond;
+      updateGame();
+    }
+
+    setInterval(passiveGain, 1000);
+    updatePrices();
   </script>
 </body>
 </html>
