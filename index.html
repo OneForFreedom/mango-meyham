@@ -5,31 +5,47 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Mango Meyham</title>
   <style>
+    :root {
+      --bg: #ffffff;
+      --text: #000000;
+      --accent: #ff4081;
+      --btn-bg: #ff4081;
+      --btn-text: #ffffff;
+      --btn-hover: #e91e63;
+      --shop-bg: #f0f0f0;
+      --border: #ddd;
+    }
+
+    .dark-mode {
+      --bg: #121212;
+      --text: #f0f0f0;
+      --accent: #ff80ab;
+      --btn-bg: #ff4081;
+      --btn-text: #ffffff;
+      --btn-hover: #e91e63;
+      --shop-bg: #1e1e1e;
+      --border: #444;
+    }
+
     body {
       font-family: "Comic Sans MS", cursive, sans-serif;
       text-align: center;
       padding: 40px;
-      background: linear-gradient(135deg, #ffb6c1, #ff6f91);
-      color: #2b1e1e;
+      background: var(--bg);
+      color: var(--text);
       user-select: none;
+      transition: background 0.3s, color 0.3s;
     }
 
-    h1 {
-      text-shadow: 2px 2px 5px #8b0000;
-      color: #fff;
-    }
-
-    h3, h2 {
-      color: #fff3f3;
-      text-shadow: 1px 1px 2px #000;
+    h1, h2, h3 {
+      color: var(--accent);
     }
 
     #message {
       font-size: 18px;
       margin-top: 20px;
-      color: #fff;
+      color: var(--text);
       min-height: 40px;
-      text-shadow: 1px 1px 2px #000;
     }
 
     .mango-img {
@@ -37,7 +53,6 @@
       height: auto;
       transition: transform 0.1s ease;
       cursor: pointer;
-      filter: drop-shadow(0 0 12px #ff6699);
     }
 
     .mango-img:active {
@@ -47,17 +62,16 @@
     button {
       padding: 14px 30px;
       font-size: 20px;
-      background-color: #e60039;
-      color: white;
-      border: 2px solid #ff1a40;
+      background-color: var(--btn-bg);
+      color: var(--btn-text);
+      border: none;
       border-radius: 10px;
       cursor: pointer;
       margin-top: 25px;
-      box-shadow: 0 0 12px #7a1f2d;
     }
 
     button:hover {
-      background-color: #b3002d;
+      background-color: var(--btn-hover);
     }
 
     .shop {
@@ -65,17 +79,31 @@
     }
 
     .shop-item {
-      margin: 10px 0;
-      padding: 10px;
-      border: 2px solid #ff4d6d;
-      background-color: #ffeef2;
+      margin: 10px auto;
+      padding: 15px;
+      width: 60%;
+      background-color: var(--shop-bg);
+      border: 2px solid var(--border);
       border-radius: 8px;
-      box-shadow: 0 0 10px #ff6f91;
-      color: #2b1e1e;
+      color: var(--text);
+    }
+
+    .shop-item button {
+      margin-left: 15px;
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 10px;
+      right: 10px;
     }
   </style>
 </head>
 <body>
+  <div class="top-bar">
+    <button onclick="toggleTheme()">🌓 Light/Dark Mode</button>
+  </div>
+
   <h1>Mango Meyham</h1>
   <h3>Mangoes Collected: <span id="count">0</span></h3>
   <h3>Rebirths: <span id="rebirths">0</span></h3>
@@ -88,17 +116,29 @@
   <button id="rebirthBtn" onclick="performRebirth()" style="display:none;">🔥 Rebirth 🔥</button>
 
   <div class="shop">
-    <h2>Shop 🍍</h2>
-    
+    <h2> 🥭 Mango Shop 🥭</h2>
+    <div class="shop-item" id="item0">+1 MPS - <span id="price0">100</span> mangoes <button onclick="buyItem(0)">Buy</button></div>
+    <div class="shop-item" id="item1">+10 MPS - <span id="price1">500</span> mangoes <button onclick="buyItem(1)">Buy</button></div>
+    <div class="shop-item" id="item2">+50 MPS - <span id="price2">2500</span> mangoes <button onclick="buyItem(2)">Buy</button></div>
+    <div class="shop-item" id="item3">+200 MPS - <span id="price3">12000</span> mangoes <button onclick="buyItem(3)">Buy</button></div>
+    <div class="shop-item" id="item4">+1000 MPS - <span id="price4">60000</span> mangoes <button onclick="buyItem(4)">Buy</button></div>
+    <div class="shop-item" id="item5">+5000 MPS - <span id="price5">300000</span> mangoes <button onclick="buyItem(5)">Buy</button></div>
+    <div class="shop-item" id="item6">+25000 MPS - <span id="price6">1500000</span> mangoes <button onclick="buyItem(6)">Buy</button></div>
+    <div class="shop-item" id="item7">+100000 MPS - <span id="price7">7000000</span> mangoes <button onclick="buyItem(7)">Buy</button></div>
   </div>
 
   <script>
-    let gameState = {
-      count: 0,
-      rebirths: 0,
-      mangoesPerSecond: 0,
-      itemPrices: []
-    };
+    const body = document.body;
+
+    function toggleTheme() {
+      body.classList.toggle("dark-mode");
+      localStorage.setItem("theme", body.classList.contains("dark-mode") ? "dark" : "light");
+    }
+
+    function loadTheme() {
+      const saved = localStorage.getItem("theme");
+      if (saved === "dark") body.classList.add("dark-mode");
+    }
 
     const items = [
       { cost: 100, rate: 1 },
@@ -122,20 +162,22 @@
       10000000: "TEN Million mangoes. I quit. Continue clicking, or not, it's your choice. Thanks for playing! ❤️"
     };
 
+    let gameState = {
+      count: 0,
+      rebirths: 0,
+      mangoesPerSecond: 0,
+      itemPrices: items.map(i => i.cost)
+    };
+
     const countDisplay = document.getElementById("count");
     const rebirthDisplay = document.getElementById("rebirths");
     const mpsDisplay = document.getElementById("mps");
     const mpcDisplay = document.getElementById("mpc");
     const messageBox = document.getElementById("message");
     const rebirthButton = document.getElementById("rebirthBtn");
-    const mango = document.getElementById("mango");
 
     function rebirthThreshold(level) {
       return 1000 * Math.pow(10, level);
-    }
-
-    function isPowerOfTen(n) {
-      return Number.isInteger(Math.log10(n));
     }
 
     function updateGame() {
@@ -146,18 +188,8 @@
       checkRebirthUnlock();
     }
 
-    function updatePrices() {
-      items.forEach((item, i) => {
-        document.getElementById("price" + i).textContent = gameState.itemPrices[i].toLocaleString();
-      });
-    }
-
     function checkRebirthUnlock() {
-      if (gameState.count >= rebirthThreshold(gameState.rebirths)) {
-        rebirthButton.style.display = "inline-block";
-      } else {
-        rebirthButton.style.display = "none";
-      }
+      rebirthButton.style.display = (gameState.count >= rebirthThreshold(gameState.rebirths)) ? "inline-block" : "none";
     }
 
     function performRebirth() {
@@ -172,14 +204,13 @@
       }
     }
 
-    mango.addEventListener("click", () => {
-      let mpc = Math.pow(gameState.rebirths + 1, 2);
+    document.getElementById("mango").addEventListener("click", () => {
+      const mpc = Math.pow(gameState.rebirths + 1, 2);
       gameState.count += mpc;
       updateGame();
 
-      if (isPowerOfTen(gameState.count)) {
-        let msg = powerMessages[gameState.count] || `You've harvested ${gameState.count.toLocaleString()} mangoes.`;
-        messageBox.textContent = msg;
+      if (Number.isInteger(Math.log10(gameState.count))) {
+        messageBox.textContent = powerMessages[gameState.count] || `You've harvested ${gameState.count.toLocaleString()} mangoes.`;
       }
     });
 
@@ -191,8 +222,14 @@
         updateGame();
         updatePrices();
       } else {
-        messageBox.textContent = "Not enough mangoes, keep grinding!";
+        messageBox.textContent = "Not enough mangoes. Please Continue Clicking";
       }
+    }
+
+    function updatePrices() {
+      gameState.itemPrices.forEach((price, i) => {
+        document.getElementById("price" + i).textContent = price.toLocaleString();
+      });
     }
 
     function passiveGain() {
@@ -208,11 +245,6 @@
       const save = JSON.parse(localStorage.getItem("mangoSave"));
       if (save) {
         gameState = Object.assign(gameState, save);
-        if (!gameState.itemPrices || gameState.itemPrices.length !== items.length) {
-          gameState.itemPrices = items.map(item => item.cost);
-        }
-      } else {
-        gameState.itemPrices = items.map(item => item.cost);
       }
       updatePrices();
       updateGame();
@@ -222,8 +254,11 @@
     setInterval(saveGame, 5000);
     window.addEventListener("beforeunload", saveGame);
 
-    
-    window.onload = loadGame;
+    window.onload = () => {
+      loadGame();
+      loadTheme();
+    };
   </script>
 </body>
 </html>
+
