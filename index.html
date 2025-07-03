@@ -234,5 +234,14 @@
     setInterval(passiveGain, 1000);
     updatePrices();
   </script>
+  
+  window.addEventListener('beforeunload', () => {
+  localStorage.setItem('mangoSave', JSON.stringify(gameState));
+});
+onLoad = () => {
+  Object.assign(gameState, JSON.parse(localStorage.getItem('mangoSave')||'{}'));
+  render();
+};
+
 </body>
 </html>
