@@ -1,145 +1,229 @@
-<script>
-  let gameState = {
-    count: 0,
-    rebirths: 0,
-    mangoesPerSecond: 0,
-    itemPrices: [],
-  };
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mango Meyham</title>
+  <style>
+    body {
+      font-family: "Comic Sans MS", cursive, sans-serif;
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(135deg, #ffb6c1, #ff6f91);
+      color: #2b1e1e;
+      user-select: none;
+    }
 
-  const countDisplay = document.getElementById("count");
-  const rebirthDisplay = document.getElementById("rebirths");
-  const mpsDisplay = document.getElementById("mps");
-  const mpcDisplay = document.getElementById("mpc");
-  const messageBox = document.getElementById("message");
-  const rebirthButton = document.getElementById("rebirthBtn");
-  const mango = document.getElementById("mango");
+    h1 {
+      text-shadow: 2px 2px 5px #8b0000;
+      color: #fff;
+    }
 
-  const items = [
-    { cost: 100, rate: 1 },
-    { cost: 500, rate: 10 },
-    { cost: 2500, rate: 50 },
-    { cost: 12000, rate: 200 },
-    { cost: 60000, rate: 1000 },
-    { cost: 300000, rate: 5000 },
-    { cost: 1500000, rate: 25000 },
-    { cost: 7000000, rate: 100000 }
-  ];
+    h3, h2 {
+      color: #fff3f3;
+      text-shadow: 1px 1px 2px #000;
+    }
 
-  const powerMessages = {
-    1: "Your first mango, well done!",
-    10: "10 down, baby steps.",
-    100: "100 mangoes. Enough to feed my apartment block.",
-    1000: "Probably will feed my school tenfold.",
-    10000: "10k??? I hope you're playing legit",
-    100000: "100k. Good job! I respect you.",
-    1000000: "Million mangoes. I see the grind.",
-    10000000: "TEN Million mangoes. I quit. Continue clicking, or not, it's your choice. Thanks for playing! ❤️"
-  };
+    #message {
+      font-size: 18px;
+      margin-top: 20px;
+      color: #fff;
+      min-height: 40px;
+      text-shadow: 1px 1px 2px #000;
+    }
 
-  function isPowerOfTen(n) {
-    return Number.isInteger(Math.log10(n));
-  }
+    .mango-img {
+      width: 200px;
+      height: auto;
+      transition: transform 0.1s ease;
+      cursor: pointer;
+      filter: drop-shadow(0 0 12px #ff6699);
+    }
 
-  function rebirthThreshold(level) {
-    return 1000 * Math.pow(10, level);
-  }
+    .mango-img:active {
+      transform: scale(0.85) rotate(-15deg);
+    }
 
-  function updatePrices() {
-    items.forEach((_, i) => {
-      document.getElementById("price" + i).textContent = gameState.itemPrices[i].toLocaleString();
+    button {
+      padding: 14px 30px;
+      font-size: 20px;
+      background-color: #e60039;
+      color: white;
+      border: 2px solid #ff1a40;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 25px;
+      box-shadow: 0 0 12px #7a1f2d;
+    }
+
+    button:hover {
+      background-color: #b3002d;
+    }
+
+    .shop {
+      margin-top: 40px;
+    }
+
+    .shop-item {
+      margin: 10px 0;
+      padding: 10px;
+      border: 2px solid #ff4d6d;
+      background-color: #ffeef2;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ff6f91;
+      color: #2b1e1e;
+    }
+  </style>
+</head>
+<body>
+  <h1>Mango Meyham</h1>
+  <h3>Mangoes Collected: <span id="count">0</span></h3>
+  <h3>Rebirths: <span id="rebirths">0</span></h3>
+  <h3>Mangoes Per Second: <span id="mps">0</span></h3>
+  <h3>Mangoes Per Click: <span id="mpc">1</span></h3>
+
+  <img id="mango" src="Mango.png" class="mango-img" alt="Missing Mango" />
+
+  <div id="message"></div>
+  <button id="rebirthBtn" onclick="performRebirth()" style="display:none;">🔥 Rebirth 🔥</button>
+
+  <div class="shop">
+    <h2>Shop 🍍</h2>
+    
+  </div>
+
+  <script>
+    let gameState = {
+      count: 0,
+      rebirths: 0,
+      mangoesPerSecond: 0,
+      itemPrices: []
+    };
+
+    const items = [
+      { cost: 100, rate: 1 },
+      { cost: 500, rate: 10 },
+      { cost: 2500, rate: 50 },
+      { cost: 12000, rate: 200 },
+      { cost: 60000, rate: 1000 },
+      { cost: 300000, rate: 5000 },
+      { cost: 1500000, rate: 25000 },
+      { cost: 7000000, rate: 100000 }
+    ];
+
+    const powerMessages = {
+      1: "Your first mango, well done!",
+      10: "10 down, baby steps.",
+      100: "100 mangoes. Enough to feed my apartment block.",
+      1000: "Probably will feed my school tenfold.",
+      10000: "10k??? I hope you're playing legit",
+      100000: "100k. Good job! I respect you.",
+      1000000: "Million mangoes. I see the grind.",
+      10000000: "TEN Million mangoes. I quit. Continue clicking, or not, it's your choice. Thanks for playing! ❤️"
+    };
+
+    const countDisplay = document.getElementById("count");
+    const rebirthDisplay = document.getElementById("rebirths");
+    const mpsDisplay = document.getElementById("mps");
+    const mpcDisplay = document.getElementById("mpc");
+    const messageBox = document.getElementById("message");
+    const rebirthButton = document.getElementById("rebirthBtn");
+    const mango = document.getElementById("mango");
+
+    function rebirthThreshold(level) {
+      return 1000 * Math.pow(10, level);
+    }
+
+    function isPowerOfTen(n) {
+      return Number.isInteger(Math.log10(n));
+    }
+
+    function updateGame() {
+      countDisplay.textContent = gameState.count.toLocaleString();
+      rebirthDisplay.textContent = gameState.rebirths;
+      mpsDisplay.textContent = gameState.mangoesPerSecond.toLocaleString();
+      mpcDisplay.textContent = Math.pow(gameState.rebirths + 1, 2);
+      checkRebirthUnlock();
+    }
+
+    function updatePrices() {
+      items.forEach((item, i) => {
+        document.getElementById("price" + i).textContent = gameState.itemPrices[i].toLocaleString();
+      });
+    }
+
+    function checkRebirthUnlock() {
+      if (gameState.count >= rebirthThreshold(gameState.rebirths)) {
+        rebirthButton.style.display = "inline-block";
+      } else {
+        rebirthButton.style.display = "none";
+      }
+    }
+
+    function performRebirth() {
+      if (gameState.count >= rebirthThreshold(gameState.rebirths)) {
+        gameState.count = 0;
+        gameState.rebirths++;
+        gameState.mangoesPerSecond = 0;
+        gameState.itemPrices = items.map(item => item.cost);
+        updatePrices();
+        updateGame();
+        messageBox.textContent = `🔥 Rebirth successful! Mangoes per click is now ${(gameState.rebirths + 1) ** 2}.`;
+      }
+    }
+
+    mango.addEventListener("click", () => {
+      let mpc = Math.pow(gameState.rebirths + 1, 2);
+      gameState.count += mpc;
+      updateGame();
+
+      if (isPowerOfTen(gameState.count)) {
+        let msg = powerMessages[gameState.count] || `You've harvested ${gameState.count.toLocaleString()} mangoes.`;
+        messageBox.textContent = msg;
+      }
     });
-  }
 
-  function updateGame() {
-    countDisplay.textContent = gameState.count.toLocaleString();
-    rebirthDisplay.textContent = gameState.rebirths;
-    mpsDisplay.textContent = gameState.mangoesPerSecond.toLocaleString();
-    mpcDisplay.textContent = Math.pow(gameState.rebirths + 1, 2);
-    checkRebirthUnlock();
-    saveGame();
-  }
-
-  function checkRebirthUnlock() {
-    if (gameState.count >= rebirthThreshold(gameState.rebirths)) {
-      rebirthButton.style.display = "inline-block";
-    } else {
-      rebirthButton.style.display = "none";
+    function buyItem(index) {
+      if (gameState.count >= gameState.itemPrices[index]) {
+        gameState.count -= gameState.itemPrices[index];
+        gameState.mangoesPerSecond += items[index].rate;
+        gameState.itemPrices[index] = Math.floor(gameState.itemPrices[index] * 1.25);
+        updateGame();
+        updatePrices();
+      } else {
+        messageBox.textContent = "Not enough mangoes, keep grinding!";
+      }
     }
-  }
 
-  function performRebirth() {
-    if (gameState.count >= rebirthThreshold(gameState.rebirths)) {
-      gameState.count = 0;
-      gameState.rebirths++;
-      gameState.mangoesPerSecond = 0;
-      gameState.itemPrices = items.map(item => item.cost);
+    function passiveGain() {
+      gameState.count += gameState.mangoesPerSecond;
+      updateGame();
+    }
+
+    function saveGame() {
+      localStorage.setItem("mangoSave", JSON.stringify(gameState));
+    }
+
+    function loadGame() {
+      const save = JSON.parse(localStorage.getItem("mangoSave"));
+      if (save) {
+        gameState = Object.assign(gameState, save);
+        if (!gameState.itemPrices || gameState.itemPrices.length !== items.length) {
+          gameState.itemPrices = items.map(item => item.cost);
+        }
+      } else {
+        gameState.itemPrices = items.map(item => item.cost);
+      }
       updatePrices();
       updateGame();
-      messageBox.textContent = `🔥 Rebirth successful! Mangoes per click is now ${(gameState.rebirths + 1) ** 2}.`;
-      rebirthButton.style.display = "none";
     }
-  }
 
-  mango.addEventListener("click", () => {
-    let mangoesPerClick = Math.pow(gameState.rebirths + 1, 2);
-    gameState.count += mangoesPerClick;
-    updateGame();
+    setInterval(passiveGain, 1000);
+    setInterval(saveGame, 5000);
+    window.addEventListener("beforeunload", saveGame);
 
-    if (isPowerOfTen(gameState.count)) {
-      let msg = powerMessages[gameState.count] || `You've harvested ${gameState.count.toLocaleString()} mangoes.`;
-      messageBox.textContent = msg;
-    }
-  });
-
-  function buyItem(index) {
-    const button = document.getElementById("buyBtn" + index);
-    if (button.disabled) return;
-
-    if (gameState.count >= gameState.itemPrices[index]) {
-      gameState.count -= gameState.itemPrices[index];
-      gameState.mangoesPerSecond += items[index].rate;
-      gameState.itemPrices[index] = Math.floor(gameState.itemPrices[index] * 1.25);
-      updateGame();
-      updatePrices();
-
-      
-      button.disabled = true;
-      button.style.transform = "scale(0.85)";
-      button.style.opacity = 0.6;
-
-      setTimeout(() => {
-        button.disabled = false;
-        button.style.transform = "scale(1)";
-        button.style.opacity = 1;
-      }, 500);
-    } else {
-      messageBox.textContent = "Not enough mangoes, bro.";
-    }
-  }
-
-  function passiveGain() {
-    gameState.count += gameState.mangoesPerSecond;
-    updateGame();
-  }
-
-  function saveGame() {
-    localStorage.setItem('mangoSave', JSON.stringify(gameState));
-  }
-
-  function loadGame() {
-    const saved = localStorage.getItem('mangoSave');
-    if (saved) {
-      const loaded = JSON.parse(saved);
-      Object.assign(gameState, loaded);
-    } else {
-      gameState.itemPrices = items.map(item => item.cost);
-    }
-    updatePrices();
-    updateGame();
-  }
-
-  window.addEventListener("load", loadGame);
-  window.addEventListener("beforeunload", saveGame);
-
-  setInterval(passiveGain, 1000);
-</script>
+    
+    window.onload = loadGame;
+  </script>
+</body>
+</html>
